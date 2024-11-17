@@ -2,37 +2,126 @@
 
 @{
     ViewData["Title"] = "Login";
+    Layout = null;
 }
 
-<h1>Login</h1>
 
-<h4>LoginVM</h4>
-<hr />
-<div class="row">vfdv
-    <div class="col-md-4">
-        <form asp-action="Login">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+</head>
+
+
+<!-- Tailwind CSS Login Template -->
+<main class="h-screen bg-gray-900 flex items-center justify-center">
+    <section class="w-full max-w-md px-6 py-8 bg-gray-800 rounded-lg shadow-lg">
+        
+        <h2 class="text-3xl font-semibold text-center text-white">Log In</h2>
+        <p class="text-sm text-center text-gray-400 mt-2">Welcome back! Please login to your account.</p>
+
+        
+        <form class="mt-8 space-y-8" method="post" asp-action="Login">
+            <div class="space-y-4">
+                
+                <div>
+                    <label for="Email" class="block text-sm text-gray-400">Email</label>
+                    <input asp-for="Email"
+                           type="email"
+                           placeholder="Enter your email"
+                           class="w-full px-4 py-2 mt-2 text-gray-900 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50" />
+                    <span asp-validation-for="Email" class="text-red-500 text-sm"></span>
+                </div>
+
+                <div class="relative">
+                    <label for="Password" class="block text-sm text-gray-400">Password</label>
+                    <input asp-for="Password"
+                           type="password"
+                           id="password"
+                           placeholder="Enter your password"
+                           class="w-full px-4 py-2 mt-2 text-gray-900 bg-gray-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 pr-12" />
+                    <span asp-validation-for="Password" class="text-red-500 text-sm"></span>
+
+
+                    <div class="absolute right-3 top-1/2 transform -translate-y-0.02">
+                        <i id="toggle-password" class="fas fa-eye text-gray-500 cursor-pointer"></i>
+                    </div>
+                </div>
+
+            <div>
+                <button type="submit"
+                        class="w-full px-4 py-2 text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none focus:bg-indigo-500">
+                    Log In
+                </button>
             </div>
         </form>
-    </div>
-</div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+        
+        <div class="flex justify-between text-sm text-gray-400 mt-4">
+            <a href="#" id="logout-link" class="hover:text-indigo-500">Log Out</a>
+            <a href="/Home/Register" class="hover:text-indigo-500">Sign Up</a>
+        </div>
+
+        <script>
+            
+            document.getElementById('logout-link').addEventListener('click', (event) => {
+                event.preventDefault();
+                alert('You have been logged out.');
+                window.location.href = '/Home/Index';
+            });
+        </script>
+
+        <script>
+       
+            document.getElementById('toggle-password').addEventListener('click', function () {
+                const passwordInput = document.getElementById('password');
+                const icon = this;
+
+               
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash'); 
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        </script>
+    </section>
+</main>
+
+@if (TempData["Error"] != null)
+{
+    <div id="error-message" data-message="@TempData["Error"]"></div>
+}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const errorMessage = document.getElementById('error-message');
+        if (errorMessage) {
+            const message = errorMessage.getAttribute('data-message');
+            if (message) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Oops...',
+                    text: message
+                });
+            }
+        }
+    });
+</script>
+
+
+
+
+
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

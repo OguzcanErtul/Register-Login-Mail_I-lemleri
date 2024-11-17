@@ -26,7 +26,7 @@ namespace HS14Register.Controllers
 
             if (user == null)
             {
-                Console.WriteLine("Email veya şifre hatalı!!");
+                TempData["Error"] = "Email or Password is incorrect.";
                 return View(model);
             }
 
@@ -34,14 +34,14 @@ namespace HS14Register.Controllers
 
             if (!checkPass.Succeeded)
             {
-                Console.WriteLine("Email veya şifre hatalı!!");
+                TempData["Error"] = "Email or Password is incorrect.";
                 return View(model);
             }
 
             var userRole = await _userManager.GetRolesAsync(user);
             if (userRole == null)
             {
-                Console.WriteLine("Email veya şifre hatalı!!");
+                TempData["Error"] = "Email or Password is incorrect.";
                 return View(model);
             }
 
