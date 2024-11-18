@@ -2,32 +2,138 @@
 
 @{
     ViewData["Title"] = "Register";
+    Layout = null;
+    var atSymbol = "@";
 }
 
-<h1>Register</h1>
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 
-<h4>RegisterVM</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Register">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="font-[sans-serif] bg-white md:h-screen">
+    <div class="grid md:grid-cols-2 items-center gap-8 h-full">
+        
+        <div class="max-md:order-1 p-4">
+            <img src="https://readymadeui.com/signin-image.webp" 
+                 class="lg:max-w-[85%] w-full h-full object-contain block mx-auto" 
+                 alt="register-image" />
+        </div>
+
+        <div class="flex items-center md:p-8 p-6 bg-[#0C172C] h-full lg:w-11/12 lg:ml-auto">
+           <form id="register-form" asp-action="Register" method="post" class="max-w-lg w-full mx-auto">
+                <div class="mb-12">
+                    <h3 class="text-3xl font-bold text-yellow-400">Create an account</h3>
+                </div>
+
+                
+                <div>
+                    <label for="FirstName" class="text-white text-xs block mb-2">First Name</label>
+                    <div class="relative flex items-center">
+                        <input id="FirstName" name="FirstName" type="text" 
+                               class="w-full bg-white text-sm text-gray-800 border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none" 
+                               placeholder="Enter first name" />
+                    </div>
+                </div>
+
+                
+                <div class="mt-8">
+                    <label for="LastName" class="text-white text-xs block mb-2">Last Name</label>
+                    <div class="relative flex items-center">
+                        <input id="LastName" name="LastName" type="text" 
+                               class="w-full bg-white text-sm text-gray-800 border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none" 
+                               placeholder="Enter last name" />
+                    </div>
+                </div>
+
+                
+                <div class="mt-8">
+                    <label for="Email" class="text-white text-xs block mb-2">Email</label>
+                    <div class="relative flex items-center">
+                        <input id="Email" name="Email" type="email" 
+                               class="w-full bg-white text-sm text-gray-800 border-b border-gray-300 focus:border-yellow-400 px-2 py-3 outline-none" 
+                               placeholder="Enter email" required />
+                    </div>
+                </div>
+
+                
+                <div class="mt-12">
+                    <button type="button" id="register-button" 
+                            class="w-max shadow-xl py-3 px-6 text-sm text-gray-800 font-semibold rounded-md bg-yellow-400 hover:bg-yellow-500 focus:outline-none">
+                        Register
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+<script>
+    document.getElementById('register-button').addEventListener('click', function () {
+        const firstName = document.getElementById('FirstName').value.trim();
+        const lastName = document.getElementById('LastName').value.trim();
+        const email = document.getElementById('Email').value.trim();
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+        const atSymbol = "@Html.Raw(atSymbol)";
+        const emailRegex = new RegExp(`^[^\\s${atSymbol}]+${atSymbol}[^\\s${atSymbol}]+\\.[^\\s${atSymbol}]+$`);
+        const validDomains = ['gmail.com', 'hotmail.com', 'outlook.com'];
+
+        let emailDomain = "";
+        if (email.includes(atSymbol)) {
+            emailDomain = email.split(atSymbol)[1]; 
+        }
+
+       
+        if (!firstName) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'First Name Missing',
+                text: 'Please enter your first name.',
+            });
+        } else if (!lastName) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Last Name Missing',
+                text: 'Please enter your last name.',
+            });
+        } else if (!email) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Email Missing',
+                text: 'Please enter your email address.',
+            });
+        } else if (!emailRegex.test(email)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Email Format',
+                text: 'Please enter a valid email address.',
+            });
+        } else if (!validDomains.includes(emailDomain)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Email Domain',
+                text: 'Please use a valid email domain (e.g., gmail.com, hotmail.com, outlook.com).',
+            });
+        } else {
+            Swal.fire({
+                icon: 'success',
+                title: 'Success!',
+                text: 'Your registration has been submitted. Please check your Email account.',
+            }).then(() => {
+                document.getElementById('register-form').submit();
+            });
+        }
+    });
+
+    @if (TempData["DuplicateEmail"] != null)
+    {
+        <text>
+            Swal.fire({
+                icon: 'error',
+                title: 'Duplicate Email',
+                text: '@TempData["DuplicateEmail"]',
+            });
+        </text>
+    }
+</script>

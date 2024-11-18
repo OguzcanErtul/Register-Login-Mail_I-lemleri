@@ -45,6 +45,13 @@ namespace HS14Register.Controllers
         {
             if (ModelState.IsValid)
             {
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+                if (existingUser != null)
+                {
+                    TempData["DuplicateEmail"] = "This email address is already registered.";
+                    return View(model);
+                }
+
                 var user = new IdentityUser { UserName = model.Email, Email = model.Email };
                 var result = await _userManager.CreateAsync(user, "Password+9");
                 if (result.Succeeded)
